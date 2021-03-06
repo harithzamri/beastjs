@@ -1,16 +1,10 @@
-import * as TDiscord from "discord.js";
+import { Client, Message } from "discord.js";
 
-const client = new TDiscord.Client();
+const handleMessage = (msg: Message) => {};
 
-function setup() {
-  client.on("ready", () => {
-    console.log("I am ready");
-  });
-
+function setup(client: Client) {
   client.on("message", (msg) => {
-    if (msg.content === "ping") {
-      msg.reply("Pong!");
-    }
+    handleMessage(msg);
   });
 }
 
