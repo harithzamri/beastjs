@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const client = new Client();
-const player = new Player(client, { leaveOnEnd: false });
+const player = new Player(client);
 const settings = {
   prefix: "!",
   token: "Your Discord Token",
