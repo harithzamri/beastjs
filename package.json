@@ -17,7 +17,12 @@
     "discord.js-commando": "^0.12.2",
     "dotenv": "^8.2.0",
     "ffmpeg-static": "^4.2.7",
-    "nodemon": "^2.0.7",
+    "node-pre-gyp": "^0.17.0",
+    "opusscript": "^0.0.8",
+    "rebuild": "^0.1.2",
     "typescript": "^4.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }

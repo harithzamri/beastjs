@@ -1,10 +1,13 @@
-import { Client, Message } from "discord.js";
+import * as TSDiscord from "discord.js";
 
-const handleMessage = (msg: Message) => {};
+const handleMessage = (message: TSDiscord.Message) => {
+  const guild = message.guild;
+  console.log(guild);
+};
 
-function setup(client: Client) {
+function setup(client: TSDiscord.Client) {
   client.on("message", (msg) => {
-    handleMessage(msg);
+    void handleMessage(msg);
   });
 }
 
