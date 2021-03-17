@@ -1,7 +1,7 @@
 import { Client, Message } from "discord.js";
 import dotenv from "dotenv";
 import { createDiscordClient } from "./discord/discord-bot";
-import { playMusicBot } from "./music/musid-discord";
+import { playMusicBot } from "./music/music-discord";
 dotenv.config();
 
 async function botServer() {

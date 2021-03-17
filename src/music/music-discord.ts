@@ -1,5 +1,6 @@
 import { getLogger } from "../utils/logger";
 import { YouTube } from "youtube-sr";
+import { searchMusic } from "./music-search";
 
 const logger = getLogger({
   name: "Beast-Music-bot",
@@ -11,7 +12,5 @@ const settings = {
 };
 
 export async function playMusicBot(): Promise<any> {
-  YouTube.search("despacito")
-    .then((x) => console.log(x))
-    .catch(console.error);
+  await searchMusic();
 }
