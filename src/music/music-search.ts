@@ -20,7 +20,6 @@ export async function searchMusic(): Promise<any> {
       .catch((error) => {
         console.log(error);
       });
-    console.log(tracks);
 
     return resolve(tracks[0]);
   });

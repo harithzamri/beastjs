@@ -14,7 +14,7 @@ export class SimpleTrack {
 
     this._duration =
       videoData.durationFormatted ||
-      `${Math.floor(parseInt(videoData.lenghtSeconds) / 60)}:${
+      `${Math.floor(parseInt(videoData.lengthSeconds) / 60)}:${
         parseInt(videoData.lenghtSeconds) % 60
       }`;
 
