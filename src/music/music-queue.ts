@@ -16,7 +16,7 @@ type FiltersStatuses = {
 interface QueueConfig {
   guildID: string;
   message: Message;
-  filter: PlayerFilter;
+  filter: FiltersStatuses;
 }
 
 export class SimpleQueue extends EventEmitter {
@@ -40,10 +40,14 @@ export class SimpleQueue extends EventEmitter {
 
     this._guildID = guildID;
 
-    Object.keys(filter).forEach((f) => {
-      console.log(f);
-    });
+    this._filters = filter;
 
     this._firstMessage = message;
   }
+
+  public calculateVolume(): any {
+    return this._filters.bassboost ? this._volume + 50 : this._volume;
+  }
+
+  public totalTime(): any {}
 }
