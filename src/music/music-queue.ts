@@ -3,7 +3,7 @@ import EventEmitter from "node:events";
 import { Stream } from "node:stream";
 import { SimpleTrack } from "./music-track";
 
-type Filters = "bassboost" | "8D";
+type Filters = "bassboost" | "vaporwave";
 
 type PlayerFilter = {
   [key in Filters]: string;
@@ -41,7 +41,7 @@ export class SimpleQueue extends EventEmitter {
     this._guildID = guildID;
 
     Object.keys(filter).forEach((f) => {
-      this._filters[f] = false;
+      console.log(f);
     });
 
     this._firstMessage = message;
