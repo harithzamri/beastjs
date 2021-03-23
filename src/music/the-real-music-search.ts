@@ -1,4 +1,4 @@
-import type { Client as DiscordClient, Message } from "discord.js";
+import type { Client as DiscordClient, Message, User } from "discord.js";
 import { Collection, Snowflake } from "discord.js";
 import { Logger } from "@d-fischer/logger";
 import EventEmitter from "node:events";
@@ -27,7 +27,7 @@ export interface DiscordConfig {
   options: PlayerOptions;
 }
 
-export class SimpleSearch extends EventEmitter {
+export class SimplePlayer extends EventEmitter {
   private _discordClient: DiscordClient;
   private _logger: Logger;
   private _options: {};
@@ -85,6 +85,10 @@ export class SimpleSearch extends EventEmitter {
     this.emit("playlistParseStart", {}, message);
     const playlist = await YouTube.getPlaylist(query);
     if (!playlist) return this.emit("noResults", message, query);
-    tracks = playlist.videos.map((item) => new SimpleTrack({ item }));
+    tracks = playlist.videos.map((item) => new SimpleTrack({ 
+      item,
+      
+      this
+     }));
   }
 }
