@@ -6,6 +6,7 @@ import { getLogger } from "src/utils/logger";
 import { MusicUtils } from "../utils/music-utils";
 import { SimpleQueue } from "./music-queue";
 import { SimpleTrack } from "./music-track";
+import { YouTube } from "youtube-sr";
 
 type MusicQuality = "high" | "low";
 
@@ -53,15 +54,37 @@ export class SimpleSearch extends EventEmitter {
     return this._queus.some((g) => g._guildID === message.guild?.id);
   }
 
-  public play(
+  public async play(
     message: Message,
     query: string | SimpleTrack,
-    firstResult?: boolean,
+    _firstResult?: boolean,
     isAttachment?: boolean
   ): Promise<void> {
     if (this._cooldownsTimeout.has(`end_${message.guild?.id}`)) {
       clearTimeout(this._cooldownsTimeout.get(`end_${message.guild?.id}`));
       this._cooldownsTimeout.delete(`end_${message.guild?.id}`);
     }
+    if (!query || typeof query !== "string")
+      throw new Error("Play function requires search query but received none!");
+
+    query = query.replace(/<(.+)>/g, "$1");
+    if (
+      !this._util.isDiscordAttachment(query) &&
+      !isAttachment &&
+      this._util.isYTPlaylistLink(query)
+    ) {
+      return this._handlePlaylist(message, query);
+    }
+  }
+
+  private async _handlePlaylist(
+    message: Message,
+    query: string
+  ): Promise<boolean> {
+    var tracks: any;
+    this.emit("playlistParseStart", {}, message);
+    const playlist = await YouTube.getPlaylist(query);
+    if (!playlist) return this.emit("noResults", message, query);
+    tracks = playlist.videos.map((item) => new SimpleTrack({ item }));
   }
 }
