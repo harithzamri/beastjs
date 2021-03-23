@@ -6,7 +6,7 @@ import { getLogger } from "src/utils/logger";
 import { MusicUtils } from "../utils/music-utils";
 import { SimpleQueue } from "./music-queue";
 import { SimpleTrack } from "./music-track";
-import { YouTube } from "youtube-sr";
+import { Playlist, Video, YouTube } from "youtube-sr";
 
 type MusicQuality = "high" | "low";
 
@@ -85,10 +85,10 @@ export class SimplePlayer extends EventEmitter {
     this.emit("playlistParseStart", {}, message);
     const playlist = await YouTube.getPlaylist(query);
     if (!playlist) return this.emit("noResults", message, query);
-    tracks = playlist.videos.map((item) => new SimpleTrack({ 
-      item,
-      
-      this
-     }));
+    tracks = playlist.videos.map(
+      (item: Video) => new SimpleTrack(item, message.author, this)
+    );
+
+    return true;
   }
 }
