@@ -20,7 +20,7 @@ interface QueueConfig {
 }
 
 export class SimpleQueue extends EventEmitter {
-  private _guildID: string;
+  public _guildID: string;
   private _voiceConnection: VoiceConnection;
   private _stream: Stream;
   private _tracks: SimpleTrack[];
@@ -45,9 +45,17 @@ export class SimpleQueue extends EventEmitter {
     this._firstMessage = message;
   }
 
-  public calculateVolume(): any {
+  public playing(): SimpleTrack {
+    return this._tracks[0];
+  }
+
+  public calculateVolume(): number {
     return this._filters.bassboost ? this._volume + 50 : this._volume;
   }
 
-  public totalTime(): any {}
+  public currentStreamTime(): number {
+    return this._voiceConnection.dispatcher
+      ? this._voiceConnection.dispatcher.streamTime + this.additionalStreamTime
+      : 0;
+  }
 }

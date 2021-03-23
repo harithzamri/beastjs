@@ -1,7 +1,11 @@
+import { SimpleQueue } from "./music-queue";
+import { User } from "discord.js";
+import { SimpleSearch } from "./the-real-music-search";
+
 interface VideoData {
-  url: string;
-  duration: number;
-  title: string;
+  videoData: any;
+  user: User;
+  player: SimpleSearch;
 }
 
 export class SimpleTrack {
@@ -9,8 +13,8 @@ export class SimpleTrack {
   private _duration: number;
   private _title: string;
 
-  constructor(videoData: any) {
-    this._url = videoData.url;
+  constructor({ videoData, user, player }: VideoData) {
+    this._url = videoData;
 
     this._duration =
       videoData.durationFormatted ||
@@ -20,4 +24,6 @@ export class SimpleTrack {
 
     this._title = videoData.title;
   }
+
+  public queue(): SimpleQueue {}
 }
