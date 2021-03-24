@@ -12,6 +12,42 @@ import { MusicUtils } from "../utils/music-utils";
 import { SimpleQueue } from "./music-queue";
 import { SimpleTrack } from "./music-track";
 import { Playlist, Video, YouTube } from "youtube-sr";
+import type {Filters} from './music-queue'
+
+const filters = {
+  bassboost: 'bass=g=20',
+  '8D': 'apulsator=hz=0.09',
+  vaporwave: 'aresample=48000,asetrate=48000*0.8',
+  nightcore: 'aresample=48000,asetrate=48000*1.25',
+  phaser: 'aphaser=in_gain=0.4',
+  tremolo: 'tremolo',
+  vibrato: 'vibrato=f=6.5',
+  reverse: 'areverse',
+  treble: 'treble=g=5',
+  normalizer: 'dynaudnorm=g=101',
+  surrounding: 'surround',
+  pulsator: 'apulsator=hz=1',
+  subboost: 'asubboost',
+  karaoke: 'stereotools=mlev=0.03',
+  flanger: 'flanger',
+  gate: 'agate',
+  haas: 'haas',
+  mcompand: 'mcompand',
+  mono: 'pan=mono|c0=.5*c0+.5*c1',
+  mstlr: 'stereotools=mode=ms>lr',
+  mstrr: 'stereotools=mode=ms>rr',
+  compressor: 'compand=points=-80/-105|-62/-80|-15.4/-15.4|0/-12|20/-7.6',
+  expander: 'compand=attacks=0:points=-80/-169|-54/-80|-49.5/-64.6|-41.1/-41.1|-25.8/-15|-10.8/-4.5|0/0|20/8.3',
+  softlimiter: 'compand=attacks=0:points=-80/-80|-12.4/-12.4|-6/-8|0/-6.8|20/-2.8',
+  chorus: 'chorus=0.7:0.9:55:0.4:0.25:2',
+  chorus2d: 'chorus=0.6:0.9:50|60:0.4|0.32:0.25|0.4:2|1.3',
+  chorus3d: 'chorus=0.5:0.9:50|60|40:0.4|0.32|0.3:0.25|0.4|0.3:2|2.3|1.3',
+  fadein: 'afade=t=in:ss=0:d=10'
+}
+
+type PlayerFilters = {
+  [key in Filters]: string
+}
 
 type MusicQuality = "high" | "low";
 
@@ -37,6 +73,7 @@ export class SimplePlayer extends EventEmitter {
   private _logger: Logger;
   private _options: {} | undefined;
   private _util: MusicUtils;
+  private _filters: PlayerFilters
   private _cooldownsTimeout = new Collection<any, any>();
   private _queus = new Collection<Snowflake, SimpleQueue>();
 
@@ -53,9 +90,12 @@ export class SimplePlayer extends EventEmitter {
     this._util = new MusicUtils();
 
     this._queus = new Collection();
+
+
+    this._filters = filters;
   }
 
-  public isplaying(message: Message): boolean {
+  public isPlaying(message: Message): boolean {
     return this._queus.some((g) => g._guildID === message.guild?.id);
   }
 
@@ -98,8 +138,37 @@ export class SimplePlayer extends EventEmitter {
     );
     let thumbnail: any = tracks[0]._thumbnail;
     let requestedBy: {} = message.author;
-    console.log(requestedBy);
+
+    this.emit("playlistParseEnd", playlist, message);
+
+    if (this.isPlaying(message)) {
+      const queue = this._addTracksToQueue(message, tracks);
+      this.emit('playlistAdd', message, queue, playlist)
+    }else {
+      const track = tracks.shift();
+      const queue = await this.
+    }
 
     return true;
+  }
+
+  private _addTracksToQueue(message: Message, tracks: SimpleTrack[]) {
+    const queue = this.getQueue(message);
+    if (!queue) throw new Error("cannot add tracks to queue");
+    tracks.push(...tracks);
+    return queue;
+  }
+
+  public getQueue(message: Message) {
+    const queue = this._queus.get(message.guild!.id);
+    return queue;
+  }
+
+  public _createQueue(message: Message,track: SimpleQueue){
+    return new Promise((resolve, rejects)=> {
+        const channel = message.member?.voice ? message.member.voice.channel : null;
+        if(!channel) return this.emit('error', 'NotConnected', message, this._filters)
+        
+    })
   }
 }

@@ -3,7 +3,35 @@ import EventEmitter from "node:events";
 import { Stream } from "node:stream";
 import { SimpleTrack } from "./music-track";
 
-type Filters = "bassboost" | "vaporwave";
+export type Filters =
+  | "bassboost"
+  | "8D"
+  | "vaporwave"
+  | "nightcore"
+  | "phaser"
+  | "tremolo"
+  | "vibrato"
+  | "reverse"
+  | "treble"
+  | "normalizer"
+  | "surrounding"
+  | "pulsator"
+  | "subboost"
+  | "karaoke"
+  | "flanger"
+  | "gate"
+  | "haas"
+  | "mcompand"
+  | "mono"
+  | "mstlr"
+  | "mstrr"
+  | "compressor"
+  | "expander"
+  | "softlimiter"
+  | "chorus"
+  | "chorus2d"
+  | "chorus3d"
+  | "fadein";
 
 type PlayerFilter = {
   [key in Filters]: string;
