@@ -5,6 +5,7 @@ export class SimpleTrack {
   private _url: string;
   private _duration: number | string;
   private _title: string | undefined;
+  private _thumbnail: string | undefined;
   public requestedBy: User;
   public player: SimplePlayer;
 
@@ -16,6 +17,11 @@ export class SimpleTrack {
       `${Math.floor(parseInt(videoData.lengthSeconds) / 60)}:${
         parseInt(videoData.lengthSeconds) % 60
       }`;
+
+    this._thumbnail =
+      videoData.thumbnail && typeof videoData.thumbnail === "object"
+        ? videoData.thumbnail.url
+        : videoData.thumbnail;
 
     this.requestedBy = user;
 

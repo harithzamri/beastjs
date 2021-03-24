@@ -19,7 +19,7 @@ export async function playMusicBot(): Promise<any> {
       console.log(
         music._handlePlaylist(
           message,
-          "https://www.youtube.com/watch?v=SlPhMPnQ58k&list=PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10"
+          "https://www.youtube.com/watch?v=rwvF1Lgh61w&list=PLMs24hN-DYLqLDLSjWC2U5HnZaD0mUKyw&index=1"
         )
       );
     }

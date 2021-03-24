@@ -92,9 +92,13 @@ export class SimplePlayer extends EventEmitter {
     let tracks: any[] = playlist.videos.map(
       (item: Video) => new SimpleTrack(item, message.author, this)
     );
-    duration = tracks.reduce((prev: any, next: any) => prev + next.duration, 0);
-    let thumbnail: any = tracks[0].thumbnail;
-    console.log("duration", thumbnail);
+    duration = tracks.reduce(
+      (prev: any, next: any) => prev + next._duration,
+      0
+    );
+    let thumbnail: any = tracks[0]._thumbnail;
+    let requestedBy: {} = message.author;
+    console.log(requestedBy);
 
     return true;
   }
