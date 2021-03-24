@@ -1,6 +1,6 @@
 import { getLogger } from "../utils/logger";
-import { YouTube } from "youtube-sr";
-import { searchMusic } from "./music-search";
+import { SimplePlayer } from "./the-real-music-search";
+import { Client, Message } from "discord.js";
 
 const logger = getLogger({
   name: "Beast-Music-bot",
@@ -12,5 +12,17 @@ const settings = {
 };
 
 export async function playMusicBot(): Promise<any> {
-  await searchMusic();
+  const client = new Client();
+  const music = new SimplePlayer(client);
+  client.on("message", async (message) => {
+    if (message.content === "!play") {
+      console.log(
+        music._handlePlaylist(
+          message,
+          "https://www.youtube.com/watch?v=SlPhMPnQ58k&list=PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10"
+        )
+      );
+    }
+  });
+  client.login(process.env.token);
 }

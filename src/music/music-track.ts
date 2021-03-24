@@ -1,7 +1,5 @@
-import { SimpleQueue } from "./music-queue";
 import { User } from "discord.js";
 import { SimplePlayer } from "./the-real-music-search";
-import { Video } from "youtube-sr";
 
 export class SimpleTrack {
   private _url: string;
@@ -26,5 +24,7 @@ export class SimpleTrack {
     this._title = videoData.title;
   }
 
-  public queue(): SimpleQueue {}
+  // public queue(): SimpleQueue {
+
+  // }
 }

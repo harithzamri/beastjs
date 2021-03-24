@@ -1,8 +1,13 @@
-import type { Client as DiscordClient, Message, User } from "discord.js";
+import type {
+  Client,
+  Client as DiscordClient,
+  Message,
+  User,
+} from "discord.js";
 import { Collection, Snowflake } from "discord.js";
 import { Logger } from "@d-fischer/logger";
-import EventEmitter from "node:events";
-import { getLogger } from "src/utils/logger";
+import EventEmitter from "events";
+import { getLogger } from "../utils/logger";
 import { MusicUtils } from "../utils/music-utils";
 import { SimpleQueue } from "./music-queue";
 import { SimpleTrack } from "./music-track";
@@ -30,12 +35,12 @@ export interface DiscordConfig {
 export class SimplePlayer extends EventEmitter {
   private _discordClient: DiscordClient;
   private _logger: Logger;
-  private _options: {};
+  private _options: {} | undefined;
   private _util: MusicUtils;
   private _cooldownsTimeout = new Collection<any, any>();
   private _queus = new Collection<Snowflake, SimpleQueue>();
 
-  constructor({ discordClient, options }: DiscordConfig) {
+  constructor(discordClient: Client, options?: {}) {
     super();
 
     this._discordClient = discordClient;
@@ -73,21 +78,23 @@ export class SimplePlayer extends EventEmitter {
       !isAttachment &&
       this._util.isYTPlaylistLink(query)
     ) {
-      return this._handlePlaylist(message, query);
     }
   }
 
-  private async _handlePlaylist(
+  public async _handlePlaylist(
     message: Message,
     query: string
   ): Promise<boolean> {
-    var tracks: any;
+    var duration: number;
     this.emit("playlistParseStart", {}, message);
     const playlist = await YouTube.getPlaylist(query);
     if (!playlist) return this.emit("noResults", message, query);
-    tracks = playlist.videos.map(
+    let tracks: any[] = playlist.videos.map(
       (item: Video) => new SimpleTrack(item, message.author, this)
     );
+    duration = tracks.reduce((prev: any, next: any) => prev + next.duration, 0);
+    let thumbnail: any = tracks[0].thumbnail;
+    console.log("duration", thumbnail);
 
     return true;
   }
