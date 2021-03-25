@@ -1,5 +1,5 @@
 import { User } from "discord.js";
-import { SimplePlayer } from "./the-real-music-search";
+import { SimplePlayer } from "./music-player";
 
 export class SimpleTrack {
   private _url: string;

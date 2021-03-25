@@ -47,12 +47,12 @@ export class SimpleQueue extends EventEmitter {
   private _stream: Stream;
   public _tracks: SimpleTrack[];
   private _previousTracks: SimpleTrack[];
-  private _stopped: boolean;
+  public _stopped: boolean;
   private _lastSkipped: boolean;
   private _volume: number;
   private _paused: boolean;
-  private _repeatMode: boolean;
-  private _loopMode: boolean;
+  public _repeatMode: boolean;
+  public _loopMode: boolean;
   private _filters: FiltersStatuses;
   private _firstMessage: Message;
   private additionalStreamTime: number;
@@ -63,6 +63,10 @@ export class SimpleQueue extends EventEmitter {
     this._guildID = guildID;
 
     this._filters = filter;
+
+    this._stopped = false;
+
+    this._tracks = [];
 
     this._voiceConnection = null;
 

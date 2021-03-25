@@ -1,4 +1,9 @@
-import type { Client, Client as DiscordClient, Message, VoiceConnection } from "discord.js";
+import type {
+  Client,
+  Client as DiscordClient,
+  Message,
+  VoiceConnection,
+} from "discord.js";
 import { Collection, Snowflake } from "discord.js";
 import { Logger } from "@d-fischer/logger";
 import EventEmitter from "events";
@@ -157,7 +162,7 @@ export class SimplePlayer extends EventEmitter {
     return queue;
   }
 
-  public _createQueue(message: Message , track: SimpleQueue) {
+  public _createQueue(message: Message, track: SimpleTrack) {
     return new Promise((resolve, rejects) => {
       const channel = message.member?.voice
         ? message.member.voice.channel
@@ -165,11 +170,35 @@ export class SimplePlayer extends EventEmitter {
       if (!channel)
         return this.emit("error", "NotConnected", message, this._filters);
       const queue = new SimpleQueue(message.guild?.id, message, this._filters);
-      this._queus.set(message.guild?.id, queue)
-      channel.join().then((connection: VoiceConnection) => {
-        queue._voiceConnection = connection
-        if(this._options)
-      })
+      this._queus.set(message.guild?.id, queue);
+      channel
+        .join()
+        .then((connection: VoiceConnection) => {
+          queue._voiceConnection = connection;
+          if (this._options?.autoSelfDeaf) connection.voice.setSelfDeaf(true);
+          queue._tracks.push(track);
+          this.emit("queueCreate", message, queue);
+          resolve(queue);
+        })
+        .catch((err) => {
+          console.error(err);
+          this._queus.delete(message.guild?.id);
+          this.emit("error", "UnableToJoin", message);
+        });
     });
+  }
+
+  public async _playTrack(queue: SimpleQueue, firstPlay: any) {
+    if (queue._stopped) return;
+    if (
+      queue._tracks.length === 1 &&
+      !queue._loopMode &&
+      !queue._repeatMode &&
+      !firstPlay
+    ) {
+      if (this._options?.leaveOnEnd && !queue._stopped) {
+        this._queus.delete(queue._guildID);
+      }
+    }
   }
 }
