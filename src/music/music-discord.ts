@@ -1,5 +1,5 @@
 import { getLogger } from "../utils/logger";
-import { SimplePlayer } from "./the-real-music-search";
+import { SimplePlayer } from "./music-player";
 import { Client, Message } from "discord.js";
 import { getTestEmbed } from "../discord/discord-embed";
 

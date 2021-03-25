@@ -41,17 +41,11 @@ type FiltersStatuses = {
   [key in Filters]: boolean;
 };
 
-interface QueueConfig {
-  guildID: string;
-  message: Message;
-  filter: FiltersStatuses;
-}
-
 export class SimpleQueue extends EventEmitter {
-  public _guildID: string;
-  private _voiceConnection: VoiceConnection;
+  public _guildID: string | undefined;
+  public _voiceConnection: VoiceConnection | null;
   private _stream: Stream;
-  private _tracks: SimpleTrack[];
+  public _tracks: SimpleTrack[];
   private _previousTracks: SimpleTrack[];
   private _stopped: boolean;
   private _lastSkipped: boolean;
@@ -63,12 +57,14 @@ export class SimpleQueue extends EventEmitter {
   private _firstMessage: Message;
   private additionalStreamTime: number;
 
-  constructor({ guildID, message, filter }: QueueConfig) {
+  constructor(guildID: string | undefined, message: Message, filter: any) {
     super();
 
     this._guildID = guildID;
 
     this._filters = filter;
+
+    this._voiceConnection = null;
 
     this._firstMessage = message;
   }
