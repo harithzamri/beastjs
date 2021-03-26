@@ -45,10 +45,10 @@ export class SimpleQueue extends EventEmitter {
   public _guildID: string | undefined;
   public _voiceConnection: VoiceConnection | null;
   private _stream: Stream;
-  public _tracks: SimpleTrack[] ;
+  public _tracks: SimpleTrack[];
   public _previousTracks: SimpleTrack[];
   public _stopped: boolean;
-  private _lastSkipped: boolean;
+  public _lastSkipped: boolean;
   private _volume: number;
   private _paused: boolean;
   public _repeatMode: boolean;
@@ -84,7 +84,7 @@ export class SimpleQueue extends EventEmitter {
   }
 
   public currentStreamTime(): number {
-    return this._voiceConnection.dispatcher
+    return this._voiceConnection?.dispatcher
       ? this._voiceConnection.dispatcher.streamTime + this.additionalStreamTime
       : 0;
   }

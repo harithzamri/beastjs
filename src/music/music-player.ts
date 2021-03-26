@@ -188,7 +188,7 @@ export class SimplePlayer extends EventEmitter {
     });
   }
 
-  private async _playTrack(queue: SimpleQueue , firstPlay: any) {
+  private async _playTrack(queue: SimpleQueue, firstPlay: any) {
     if (queue._stopped) return;
     if (
       queue._tracks.length === 1 &&
@@ -204,18 +204,25 @@ export class SimplePlayer extends EventEmitter {
         this._cooldownsTimeout.set(`end_${queue._guildID}`, timeout);
       }
 
-      this._queus.delete(queue._guildID)
+      this._queus.delete(queue._guildID);
 
-      if(queue._stopped){
-        return this.emit('musicStop')
+      if (queue._stopped) {
+        return this.emit("musicStop");
       }
-      return this.emit('queueEnd', queue._firstMessage, queue )
+      return this.emit("queueEnd", queue._firstMessage, queue);
     }
 
-    if(!queue._repeatMode && !firstPlay){
+    if (!queue._repeatMode && !firstPlay) {
       const oldTrack = queue._tracks.shift();
-      if(queue._loopMode) queue._tracks.push(oldTrack)
-      queue._previousTracks.push(oldTrack)
+      if (queue._loopMode) queue._tracks.push(oldTrack);
+      queue._previousTracks.push(oldTrack);
     }
+
+    const track = queue.playing;
+    queue._lastSkipped = false;
+  }
+
+  private _playYTDLStream(queue: SimpleQueue, updateFilter: any, seek: any) {
+    return new Promise(async (resolve) => {});
   }
 }
