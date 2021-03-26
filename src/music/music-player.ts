@@ -76,7 +76,7 @@ export class SimplePlayer extends EventEmitter {
   private _options: PlayerOptions | undefined;
   private _util: MusicUtils;
   private _filters: PlayerFilters;
-  private _cooldownsTimeout = new Collection<any, any>();
+  private _cooldownsTimeout = new Collection<string, any>();
   private _queus = new Collection<Snowflake | undefined, SimpleQueue>();
 
   constructor(discordClient: Client, options?: PlayerOptions) {
@@ -188,7 +188,7 @@ export class SimplePlayer extends EventEmitter {
     });
   }
 
-  public async _playTrack(queue: SimpleQueue, firstPlay: any) {
+  private async _playTrack(queue: SimpleQueue , firstPlay: any) {
     if (queue._stopped) return;
     if (
       queue._tracks.length === 1 &&
@@ -198,7 +198,24 @@ export class SimplePlayer extends EventEmitter {
     ) {
       if (this._options?.leaveOnEnd && !queue._stopped) {
         this._queus.delete(queue._guildID);
+        const timeout = setTimeout(() => {
+          queue._voiceConnection?.channel.leave();
+        }, this._options.leaveOnEndCooldown || 0);
+        this._cooldownsTimeout.set(`end_${queue._guildID}`, timeout);
       }
+
+      this._queus.delete(queue._guildID)
+
+      if(queue._stopped){
+        return this.emit('musicStop')
+      }
+      return this.emit('queueEnd', queue._firstMessage, queue )
+    }
+
+    if(!queue._repeatMode && !firstPlay){
+      const oldTrack = queue._tracks.shift();
+      if(queue._loopMode) queue._tracks.push(oldTrack)
+      queue._previousTracks.push(oldTrack)
     }
   }
 }
