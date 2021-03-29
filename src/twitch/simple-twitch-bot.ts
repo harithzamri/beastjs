@@ -50,7 +50,21 @@ export class SimpleTwitchBot {
     });
   }
 
-  public addCommand(commandName: string, handler: CommandHandler) {}
+  public addCommand(
+    commandName: string,
+    handler: CommandHandler,
+    options?: CommandOption
+  ) {
+    const metaHandler = this._createMetaHandler(commandName, handler, options);
+    const command = createBotCommand(commandName, handler);
+    this._commands.set(commandName, command);
+    this._logger.info(`Command removed: ${commandName}`);
+  }
+
+  public removeCommand(commandName: string): void {
+    this._commands.delete(commandName);
+    this._logger.info(`Command Removed: ${commandName}`);
+  }
 
   private _createMetaHandler(
     commandName: string,
