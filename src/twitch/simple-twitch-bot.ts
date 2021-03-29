@@ -67,7 +67,22 @@ export class SimpleTwitchBot {
   }
 
   public listen(): void {
-    this._chatClient.onMessage(async (channel, user, message, msg) => {});
+    this._chatClient.onMessage(async (channel, user, message, msg) => {
+      const match = this._findMatch(msg);
+      if (match === null) {
+        return;
+      }
+
+      const commandText = new BotCommandContext(this._chatClient, msg);
+      try {
+        this._logger.info("Executing command :" + match.command.name);
+        await match.command.execute(match.params, commandText);
+      } catch (e) {
+        const errMsg = `${match.command.name} command failed`;
+        this._logger.error(`${errMsg}:` + String(e));
+        commandText.say(errMsg);
+      }
+    });
   }
 
   private _createMetaHandler(
