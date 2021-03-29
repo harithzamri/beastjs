@@ -53,7 +53,7 @@ export class SimpleQueue extends EventEmitter {
   private _paused: boolean;
   public _repeatMode: boolean;
   public _loopMode: boolean;
-  private _filters: FiltersStatuses;
+  public _filters: FiltersStatuses;
   public _firstMessage: Message;
   private additionalStreamTime: number;
 

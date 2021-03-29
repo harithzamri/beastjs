@@ -1,10 +1,14 @@
 import { YouTube } from "youtube-sr";
+import chalk from "chalk";
+import prism from "prism-media";
 
 export class MusicUtils {
   constructor() {}
 
   public checkFFMPEG() {
     try {
+      prism.FFmpeg.getInfo();
+      return true;
     } catch (error) {
       this.alertFFMPEG();
       return false;

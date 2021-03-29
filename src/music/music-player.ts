@@ -4,6 +4,7 @@ import type {
   Message,
   VoiceConnection,
 } from "discord.js";
+import ytdl from "discord-ytdl-core";
 import { Collection, Snowflake } from "discord.js";
 import { Logger } from "@d-fischer/logger";
 import EventEmitter from "events";
@@ -222,7 +223,50 @@ export class SimplePlayer extends EventEmitter {
     queue._lastSkipped = false;
   }
 
-  private _playYTDLStream(queue: SimpleQueue, updateFilter: any, seek: any) {
-    return new Promise(async (resolve) => {});
+  private _playYTDLStream(queue: any, updateFilter: any, seek: any) {
+    return new Promise(async (resolve) => {
+      const ffmeg = this._util.checkFFMPEG();
+      if (!ffmeg) return;
+      const seekTime =
+        typeof seek === "number"
+          ? seek
+          : updateFilter
+          ? queue.voiceConnection.dispatcher.streamTime +
+            queue.additionalStreamTime
+          : undefined;
+      const encoderArgsFilters: any[] = [];
+      Object.keys(queue._filters).forEach((filtername) => {
+        if (queue._filters[filtername]) {
+        }
+      });
+      let encorderArgs;
+      if (encoderArgsFilters.length < 1) {
+        encorderArgs = [];
+      } else {
+        encorderArgs = ["-af", encoderArgsFilters.join(",")];
+      }
+      let newStream;
+      if (!queue.playing.soundcloud && !queue.playing.arbitary) {
+        newStream = ytdl(queue.playing.url, {
+          quality:
+            this._options?.quality === "low" ? "lowestaudio" : "highestaudio",
+          filter: "audioonly",
+          opusEncoded: true,
+          seek: seekTime / 1000,
+          highWaterMark: 1 << 25,
+          requestOptions: this._options?.ytdlRequestOptions || {},
+        });
+      } else {
+        newStream = ytdl.arbitraryStream(
+          queue.playing.soundcloud
+            ? await queue.playing.soundcloud.downloadProgressive()
+            : queue.playing.stream,
+          {
+            opusEncoded: true,
+            seek: seekTime / 1000,
+          }
+        );
+      }
+    });
   }
 }
