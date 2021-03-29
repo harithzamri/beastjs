@@ -56,7 +56,7 @@ export class SimpleTwitchBot {
     options?: CommandOption
   ) {
     const metaHandler = this._createMetaHandler(commandName, handler, options);
-    const command = createBotCommand(commandName, handler);
+    const command = createBotCommand(commandName, metaHandler);
     this._commands.set(commandName, command);
     this._logger.info(`Command removed: ${commandName}`);
   }
@@ -64,6 +64,10 @@ export class SimpleTwitchBot {
   public removeCommand(commandName: string): void {
     this._commands.delete(commandName);
     this._logger.info(`Command Removed: ${commandName}`);
+  }
+
+  public listen(): void {
+    this._chatClient.onMessage(async (channel, user, message, msg) => {});
   }
 
   private _createMetaHandler(
@@ -113,5 +117,19 @@ export class SimpleTwitchBot {
 
       return handler(params, context);
     };
+  }
+
+  private _findMatch(msg: PrivateMessage) {
+    const line = msg.params.message.trim().replace(/  +/g, " ");
+    for (const command of this._commands.values()) {
+      const params = command.match(line, this._commandPrefix);
+      if (params !== null) {
+        return {
+          command,
+          params,
+        };
+      }
+    }
+    return null;
   }
 }
