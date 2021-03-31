@@ -4,6 +4,7 @@ import type {
   Activity,
   Guild,
   Message,
+  User as DiscordUser,
 } from "discord.js";
 import humanizeDuration from "humanize-duration";
 import { getLogger } from "src/utils/logger";
@@ -45,5 +46,16 @@ export class DiscordEventManager {
         );
       }
     });
+  }
+
+  private async _addRoleToUser(role: string, user: DiscordUser) {
+    try {
+      const guildMember = await this._guild.members.fetch(user);
+      await guildMember.roles.add(role);
+      this._logger.info(`Addes role ${role} fro ${user.tag}`);
+    } catch (error) {
+      this._logger.error(`Adding role ${role} for ${user.tag} FAILED`);
+      this._logger.error(error);
+    }
   }
 }
