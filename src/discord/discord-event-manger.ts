@@ -37,5 +37,13 @@ export class DiscordEventManager {
         msg.channel.send("pong");
       }
     });
+
+    this._discordClient.on("message", (msg: Message) => {
+      if (msg.content === "!latency") {
+        msg.channel.send(
+          `Latency for this server is ${Date.now() - msg.createdTimestamp}ms `
+        );
+      }
+    });
   }
 }
