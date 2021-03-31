@@ -1,4 +1,5 @@
 import { Logger } from "@d-fischer/logger/lib";
+import { Player } from "discord-player";
 import type {
   Client as DiscordClient,
   Activity,
@@ -13,10 +14,15 @@ interface DiscordEventManagerConfig {
   discordClient: DiscordClient;
 }
 
+const settings = {
+  prefix: "!",
+};
+
 export class DiscordEventManager {
   private _discordClient: DiscordClient;
   private _logger: Logger;
   private _guild: Guild;
+  private _player: Player;
   private _membersStreamingCooldown = new Map<string, Date>();
 
   constructor({ discordClient }: DiscordEventManagerConfig) {
@@ -24,6 +30,7 @@ export class DiscordEventManager {
     this._logger = getLogger({ name: "beast-discord-event-manager" });
     const guilds = this._discordClient.guilds.cache.array();
     this._guild = guilds[0];
+    this._player = new Player(this._discordClient);
   }
 
   public async listen(): Promise<void> {
@@ -46,16 +53,17 @@ export class DiscordEventManager {
         );
       }
     });
-  }
 
-  private async _addRoleToUser(role: string, user: DiscordUser) {
-    try {
-      const guildMember = await this._guild.members.fetch(user);
-      await guildMember.roles.add(role);
-      this._logger.info(`Addes role ${role} fro ${user.tag}`);
-    } catch (error) {
-      this._logger.error(`Adding role ${role} for ${user.tag} FAILED`);
-      this._logger.error(error);
-    }
+    this._discordClient.on("message", (msg: Message) => {
+      const args = msg.content
+        .slice(settings.prefix.length)
+        .trim()
+        .split(/ +/g);
+      const command = args.shift()?.toLowerCase();
+
+      if (command === "play") {
+        this._player.play(msg, args[0], true);
+      }
+    });
   }
 }
