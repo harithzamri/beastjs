@@ -48,15 +48,23 @@ export function getTwitchStreamEmbed({
     .setColor(EMBED_COLOR)
     .setTitle(title)
     .setURL(TWITCH_URL)
-    .setAuthor(EMBED_AUTHOR, TWITCH_ICON_URL, TWITCH_URL)
+    .setAuthor(EMBED_AUTHOR, TWITCH_URL)
     .setThumbnail(embedThumbnail)
     .addFields({ name: "Game", value: gameName })
     .setImage(embedImageUrl)
     .setTimestamp(startDate);
 }
 
-// export function getMusicStreamEmbed(): Discord.MessageEmbed{
-//   return new Discord.MessageEmbed{
-
-//   }
-// }
+export function getMusicStreamEmbed(): Discord.MessageEmbed {
+  return new Discord.MessageEmbed()
+    .setColor("red")
+    .setTitle("Now Playing 🎶")
+    .setDescription("Streets of Dreams")
+    .setURL("https://www.youtube.com/watch?v=Fm-KLUZM-Tg")
+    .setThumbnail("https://i.ytimg.com/vi/Fm-KLUZM-Tg/maxresdefault.jpg")
+    .addFields(
+      { name: "Length", value: "2:30" },
+      { name: "Requested By", value: "toikee" }
+    )
+    .setTimestamp(Date.now());
+}
