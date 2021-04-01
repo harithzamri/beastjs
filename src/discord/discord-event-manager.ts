@@ -2,7 +2,7 @@ import { Logger } from "@d-fischer/logger/lib";
 import { Player } from "discord-player";
 import type { Client as DiscordClient, Guild, Message } from "discord.js";
 import { getLogger } from "../utils/logger";
-import { getTestEmbed } from "./discord-embed";
+import { getMusicStreamEmbed } from "./discord-embed";
 
 interface DiscordEventManagerConfig {
   discordClient: DiscordClient;
@@ -56,7 +56,7 @@ export class DiscordEventManager {
 
     this._discordClient.on("message", (msg: Message) => {
       if (msg.content === "!embed") {
-        msg.channel.send(getTestEmbed());
+        msg.channel.send(getMusicStreamEmbed());
       }
     });
   }

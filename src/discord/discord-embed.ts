@@ -57,7 +57,7 @@ export function getTwitchStreamEmbed({
 
 export function getMusicStreamEmbed(): Discord.MessageEmbed {
   return new Discord.MessageEmbed()
-    .setColor("red")
+    .setColor("#DC143C")
     .setTitle("Now Playing 🎶")
     .setDescription("Streets of Dreams")
     .setURL("https://www.youtube.com/watch?v=Fm-KLUZM-Tg")
