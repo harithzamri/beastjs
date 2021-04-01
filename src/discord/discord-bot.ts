@@ -1,6 +1,7 @@
 import Discord from "discord.js";
 import type { Client as DiscordClient } from "discord.js";
 import { getLogger } from "../utils/logger";
+import { DiscordEventManager } from "./discord-event-manager";
 
 const logger = getLogger({
   name: "Beast-bot",
@@ -10,6 +11,18 @@ export async function createDiscordClientImp(
   resolve: (dc: DiscordClient) => void
 ): Promise<void> {
   const client = new Discord.Client();
+
+  client.once("ready", async () => {
+    logger.info("Discord Client is Ready");
+
+    const eventManager = new DiscordEventManager({
+      discordClient: client,
+    });
+
+    await eventManager.listen();
+
+    resolve(client);
+  });
 
   client.on("message", (message) => {
     // eslint-disable-next-line max-len
