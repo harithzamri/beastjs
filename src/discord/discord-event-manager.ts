@@ -4,6 +4,7 @@ import type { Client as DiscordClient, Guild, Message } from "discord.js";
 import { getLogger } from "../utils/logger";
 import { getBasicInfo, videoInfo } from "ytdl-core";
 import { getMusicStreamEmbed } from "./discord-embed";
+import { YouTube } from "youtube-sr";
 import { playMusicBot } from "src/music/music-discord";
 
 interface DiscordEventManagerConfig {
@@ -80,9 +81,7 @@ export class DiscordEventManager {
             })
           );
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch((error) => {});
     });
 
     this._discordClient.on("message", (msg: Message) => {
@@ -96,6 +95,14 @@ export class DiscordEventManager {
       if (msg.content === "!resume") {
         this._player.resume(msg);
         msg.channel.send("Resuming the song");
+      }
+    });
+
+    this._discordClient.on("message", (msg: Message) => {
+      if (msg.content === "!greetings") {
+        // msg.channel.send(`Hi Bitch ${msg.author.username}`);
+        let mention = msg.mentions.members?.first();
+        console.log(mention);
       }
     });
   }
