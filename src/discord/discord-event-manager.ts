@@ -5,7 +5,6 @@ import { getLogger } from "../utils/logger";
 import { getBasicInfo, videoInfo } from "ytdl-core";
 import { getMusicStreamEmbed } from "./discord-embed";
 import { YouTube } from "youtube-sr";
-import { playMusicBot } from "src/music/music-discord";
 
 interface DiscordEventManagerConfig {
   discordClient: DiscordClient;
@@ -101,8 +100,6 @@ export class DiscordEventManager {
     this._discordClient.on("message", (msg: Message) => {
       if (msg.content === "!greetings") {
         msg.channel.send(`Hi Bitch <@${msg.author.id}>`);
-        // let mention = msg.mentions.users.first();
-        // msg.channel.send(`Hey <@${mention?.lastMessage?.id}>`);
       }
     });
   }
