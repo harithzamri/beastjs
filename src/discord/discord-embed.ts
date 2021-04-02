@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { Message } from "discord.js";
 
 const TWITCH_URL = "https://twitch.tv/harithtoikee";
 const EMBED_COLOR = "#FDE64B";
@@ -30,6 +30,14 @@ interface TwitchStreamEmbedConfig {
   boxArtURL: string | null;
 }
 
+interface MusicStreamEmbedConfig {
+  title: string;
+  duration: string;
+  thumbnailUrl: string;
+  url: string;
+  requestedBy: string;
+}
+
 export function getTwitchStreamEmbed({
   title,
   startDate,
@@ -55,16 +63,22 @@ export function getTwitchStreamEmbed({
     .setTimestamp(startDate);
 }
 
-export function getMusicStreamEmbed(): Discord.MessageEmbed {
+export function getMusicStreamEmbed({
+  title,
+  duration,
+  thumbnailUrl,
+  url,
+  requestedBy,
+}: MusicStreamEmbedConfig): Discord.MessageEmbed {
   return new Discord.MessageEmbed()
     .setColor("#DC143C")
     .setTitle("Now Playing 🎶")
-    .setDescription("Streets of Dreams")
-    .setURL("https://www.youtube.com/watch?v=Fm-KLUZM-Tg")
-    .setThumbnail("https://i.ytimg.com/vi/Fm-KLUZM-Tg/maxresdefault.jpg")
+    .setDescription(title)
+    .setURL(url)
+    .setThumbnail(thumbnailUrl)
     .addFields(
-      { name: "Length", value: "2:30" },
-      { name: "Requested By", value: "toikee" }
+      { name: "Length", value: duration },
+      { name: "Requested By", value: requestedBy }
     )
     .setTimestamp(Date.now());
 }
