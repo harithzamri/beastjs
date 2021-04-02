@@ -1,4 +1,4 @@
-import Discord, { Message } from "discord.js";
+import Discord from "discord.js";
 
 const TWITCH_URL = "https://twitch.tv/harithtoikee";
 const EMBED_COLOR = "#FDE64B";
