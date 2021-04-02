@@ -100,9 +100,9 @@ export class DiscordEventManager {
 
     this._discordClient.on("message", (msg: Message) => {
       if (msg.content === "!greetings") {
-        // msg.channel.send(`Hi Bitch ${msg.author.username}`);
-        let mention = msg.mentions.members?.first();
-        console.log(mention);
+        msg.channel.send(`Hi Bitch <@${msg.author.id}>`);
+        // let mention = msg.mentions.users.first();
+        // msg.channel.send(`Hey <@${mention?.lastMessage?.id}>`);
       }
     });
   }
