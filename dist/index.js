@@ -13,12 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
+const express_1 = __importDefault(require("express"));
 const discord_bot_1 = require("./discord/discord-bot");
 dotenv_1.default.config();
+const app = express_1.default();
+const PORT = process.env.PORT || 4000;
 function botServer() {
     return __awaiter(this, void 0, void 0, function* () {
         const [discordClient, player] = yield Promise.all([discord_bot_1.createDiscordClient()]);
     });
 }
+app.get("/", (_req, res) => res.send("hello"));
+app.listen(PORT, () => {
+    console.log(`Server is listening to port:${PORT}`);
+});
 void botServer();
 //# sourceMappingURL=index.js.map
