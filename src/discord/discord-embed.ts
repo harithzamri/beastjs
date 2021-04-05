@@ -8,7 +8,7 @@ function randomNumber(min: number, max: number): number {
   const r = Math.random() * (max - min) + min;
   return Math.floor(r);
 }
-
+//
 export function getTestEmbed(): Discord.MessageEmbed {
   return new Discord.MessageEmbed()
     .setColor("#0099ff")
