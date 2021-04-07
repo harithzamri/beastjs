@@ -42,6 +42,10 @@ export class TwitchManagerConfig {
     this.initCommands();
   }
 
+  public async listen(): Promise<void> {
+    this._simpleTwitchBot.listen();
+  }
+
   private initCommands(): void {
     this._simpleTwitchBot.addCommand("!ping", async (params, context) => {
       context.say("!pong");

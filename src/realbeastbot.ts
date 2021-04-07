@@ -4,6 +4,7 @@ import { ChatClient, LogLevel } from "twitch-chat-client";
 import { ApiClient } from "twitch";
 import { getLogger } from "./utils/logger";
 import { TokenData, writeTwitchTokens } from "./twitch/twitch-token-cache";
+import { Client as DiscordClient } from "discord.js";
 
 export interface TwitchBotConfig {
   apiClient: ApiClient;
@@ -17,7 +18,7 @@ const logger = getLogger({
 
 export function createBotConfig(token: TokenData): TwitchBotConfig {
   logger.info("Creating bot Config");
-  const authProver = new RefreshableAuthProvider(
+  const authProvider = new RefreshableAuthProvider(
     new StaticAuthProvider("twitchid", token.accessToken),
     {
       clientSecret: "twitch-secret",
@@ -34,4 +35,34 @@ export function createBotConfig(token: TokenData): TwitchBotConfig {
       },
     }
   );
+
+  const apiClient = new ApiClient({
+    authProvider,
+    logLevel: LogLevel.DEBUG,
+  });
+
+  const chatClient = new ChatClient(authProvider, {
+    channels: ["twitch-name"],
+    logger: {
+      name: "twitch-chat-client",
+      timestamps: true,
+      minLevel: "DEBUG",
+      colors: false,
+    },
+  });
+  return {
+    authProvider,
+    apiClient,
+    chatClient,
+  };
+}
+
+interface RealBeastbotConfig {
+  discordClinet: DiscordClient;
+  tokenData: TokenData;
+}
+
+export class RealBeastbot {
+  private _chatClient: ChatClient;
+  private _discordClient: DiscordClient;
 }
