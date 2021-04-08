@@ -1,10 +1,9 @@
 import { Logger } from "@d-fischer/logger/lib";
 import { Player, Track } from "discord-player";
-import type { Client as DiscordClient, Guild, Message } from "discord.js";
+import type { Client as DiscordClient, Message } from "discord.js";
 import { getLogger } from "../utils/logger";
 import { getBasicInfo, videoInfo } from "ytdl-core";
 import { getMusicStreamEmbed } from "./discord-embed";
-import { YouTube } from "youtube-sr";
 
 interface DiscordEventManagerConfig {
   discordClient: DiscordClient;
