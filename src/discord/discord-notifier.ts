@@ -1,10 +1,11 @@
 import { Logger } from "@d-fischer/logger/lib";
-import type {
+import  {
   Client as DiscordClient,
   Channel as DiscordChannel,
   MessageEmbed,
 } from "discord.js";
-import { getLogger } from "src/utils/logger";
+import { DISCORD_CHANNEL_ID } from "../utils/constants";
+import { getLogger } from "../utils/logger";
 
 interface DiscordNotifierConfig {
   discordClient: DiscordClient;
@@ -18,9 +19,8 @@ interface MessageConfig {
 export class DiscordNotifier {
   private _discordClient: DiscordClient;
   private _logger: Logger;
-  private _streamingMembersChannel?: DiscordChannel;
   private _streamStatusChannel?: DiscordChannel;
-  private _testChannel: DiscordChannel;
+  private _testChannel?: DiscordChannel;
 
   constructor({ discordClient }: DiscordNotifierConfig) {
     this._discordClient = discordClient;
@@ -28,5 +28,15 @@ export class DiscordNotifier {
     this._logger = getLogger({
       name: "Realbeast-notifier",
     });
+
+    this._streamStatusChannel = this._discordClient.channels.cache.get(
+      DISCORD_CHANNEL_ID.STREAM_STATUS
+    );
   }
+
+  public async notifyStreamStatusChannel(message: MessageConfig) {
+    if(this._streamStatusChannel && this._streamStatusChannel.isText()){
+      
+    }
+  
 }

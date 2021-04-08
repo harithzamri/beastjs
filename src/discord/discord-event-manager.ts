@@ -1,9 +1,10 @@
 import { Logger } from "@d-fischer/logger/lib";
 import { Player, Track } from "discord-player";
-import type { Client as DiscordClient, Message } from "discord.js";
+import { Channel, Client as DiscordClient, Message } from "discord.js";
 import { getLogger } from "../utils/logger";
 import { getBasicInfo, videoInfo } from "ytdl-core";
 import { getMusicStreamEmbed } from "./discord-embed";
+import { DISCORD_CHANNEL_ID, DISCORD_ROLE_ID } from "../utils/constants";
 
 interface DiscordEventManagerConfig {
   discordClient: DiscordClient;
@@ -99,6 +100,15 @@ export class DiscordEventManager {
     this._discordClient.on("message", (msg: Message) => {
       if (msg.content === "!greetings") {
         msg.channel.send(`Hi Bitch <@${msg.author.id}>`);
+      }
+    });
+
+    this._discordClient.on("message", (msg: Message) => {
+      if (msg.content === "!welp") {
+        const channel = this._discordClient.channels.cache.get(
+          DISCORD_CHANNEL_ID.BOT_CHANNEL
+        );
+        console.log(channel);
       }
     });
   }

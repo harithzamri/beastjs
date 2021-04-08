@@ -81,7 +81,7 @@ export class TwitchManagerConfig {
 
         const duration = new Date().getTime() - stream.startDate.getTime();
         const durationEnglish = durationInEnglish(duration);
-        context.say(`Stream has been live fro ${durationEnglish}`);
+        context.say(`Stream has been live from ${durationEnglish}`);
       },
       {
         cooldown: {

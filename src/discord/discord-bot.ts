@@ -2,7 +2,7 @@ import Discord from "discord.js";
 import type { Client as DiscordClient } from "discord.js";
 import { getLogger } from "../utils/logger";
 import { DiscordEventManager } from "./discord-event-manager";
-import { DISCORD_ROLE_ID } from "src/utils/constants";
+import { DISCORD_ROLE_ID } from "../utils/constants";
 
 const logger = getLogger({
   name: "Beast-bot",
