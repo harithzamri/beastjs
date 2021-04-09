@@ -5,6 +5,10 @@ export const DISCORD_CHANNEL_ID = Object.freeze({
   BOT_CHANNEL: "816945898943807508", //test-channel
 });
 
+export const DISCORD_USER_ID = Object.freeze({
+  TOIKEE: "220594384079421440",
+});
+
 export const DISCORD_ROLE_ID = Object.freeze({
   ADMIN: "756812396114346016",
   MEMBERS: "756812661676834874",

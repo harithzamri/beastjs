@@ -1,17 +1,27 @@
 import { Logger } from "@d-fischer/logger/lib";
 import { Player, Track } from "discord-player";
-import { Channel, Client as DiscordClient, Message } from "discord.js";
+import {
+  Channel,
+  Client as DiscordClient,
+  Message,
+  Presence,
+} from "discord.js";
 import { getLogger } from "../utils/logger";
 import { getBasicInfo, videoInfo } from "ytdl-core";
 import { getMusicStreamEmbed } from "./discord-embed";
-import { DISCORD_CHANNEL_ID, DISCORD_ROLE_ID } from "../utils/constants";
+import {
+  DISCORD_CHANNEL_ID,
+  DISCORD_ROLE_ID,
+  DISCORD_USER_ID,
+} from "../utils/constants";
+import { play } from "../music/play";
 
 interface DiscordEventManagerConfig {
   discordClient: DiscordClient;
 }
 
 const settings = {
-  prefix: "?",
+  prefix: "!",
 };
 
 export class DiscordEventManager {
@@ -23,17 +33,18 @@ export class DiscordEventManager {
     this._discordClient = discordClient;
     this._logger = getLogger({ name: "beast-discord-event-manager" });
     this._player = new Player(this._discordClient);
-    this._player.on("trackStart", (message, track) =>
-      message.channel.send(`Now playing ${track.title}...`)
-    );
   }
 
   public async listen(): Promise<void> {
     this._logger.info("Listening to events");
     this._discordClient.on("debug", (msg) => {
-      const message = `[cllient debug] ${msg}`;
+      const message = `[client debug] ${msg}`;
       this._logger.debug(message);
     });
+
+    this._player.on("trackStart", (message, track) =>
+      message.channel.send(`Now playing ${track.title}...`)
+    );
 
     this._discordClient.on("message", (msg: Message) => {
       if (msg.content === "!latency") {
@@ -44,43 +55,7 @@ export class DiscordEventManager {
     });
 
     this._discordClient.on("message", async (msg: Message) => {
-      const args = msg.content
-        .slice(settings.prefix.length)
-        .trim()
-        .split(/ +/g);
-      const command = args.shift()?.toLowerCase();
-
-      if (command === "play") {
-        this._player.play(msg, args[0], true);
-      }
-      await getBasicInfo(args[0])
-        .then((videoUrlData: videoInfo) => {
-          const { title, url, duration, thumbnail } = new Track(
-            {
-              title: videoUrlData.videoDetails.title,
-              url: videoUrlData.videoDetails.video_url,
-              views: videoUrlData.videoDetails.viewCount,
-              thumbnail: videoUrlData.videoDetails.thumbnails[0],
-              lengthSeconds: videoUrlData.videoDetails.lengthSeconds,
-              description: videoUrlData.videoDetails.description,
-              author: {
-                name: videoUrlData.videoDetails.author.name,
-              },
-            },
-            msg.author,
-            this._player
-          );
-          msg.channel.send(
-            getMusicStreamEmbed({
-              title,
-              duration,
-              url,
-              thumbnailUrl: thumbnail,
-              requestedBy: msg.author.username,
-            })
-          );
-        })
-        .catch((error) => {});
+      play({ msg, player: this._player });
     });
 
     this._discordClient.on("message", (msg: Message) => {
@@ -112,4 +87,43 @@ export class DiscordEventManager {
       }
     });
   }
+
+  // private async _onPresenceUpdate(
+  //   oldPresence: Presence | undefined,
+  //   newPresence: Presence
+  // ) {
+  //   const user = newPresence.user;
+  //   if (!user) {
+  //     this._logger.error(
+  //       "[presence] presenceUpdate event received without newPresence.user"
+  //     );
+  //     return;
+  //   }
+
+  //   this._logger.info(`[presence] presenceUpdate user: ${user.tag}`);
+
+  //   if(user.id === DISCORD_USER_ID.TOIKEE){
+  //     this._logger.info("[presence] ignoring presence update from slaurent");
+  //     return;
+  //   }
+
+  //   const oldStreamingActivity = getStreamingActivity(oldPresence)
+  //   const newStreamingActivity = getStreamingActivity(newPresence)
+
+  //   //not streaming
+  //   if(!oldStreamingActivity && !newStreamingActivity){
+  //     return
+  //   }
+
+  //   if(oldStreamingActivity && newStreamingActivity){
+  //     this._logger.info(`[presence] ${user.id} ${user.tag} is still streaming`)
+  //     return;
+  //   }
+
+  //   if(oldStreamingActivity && !newStreamingActivity){
+  //     this._logger.info(`[presence] ${user.id} ${user.tag} is still streaming`)
+  //     return;
+  //   }
+
+  // }
 }

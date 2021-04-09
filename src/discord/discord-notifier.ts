@@ -1,5 +1,5 @@
 import { Logger } from "@d-fischer/logger/lib";
-import  {
+import {
   Client as DiscordClient,
   Channel as DiscordChannel,
   MessageEmbed,
@@ -34,9 +34,21 @@ export class DiscordNotifier {
     );
   }
 
-  public async notifyStreamStatusChannel(message: MessageConfig) {
-    if(this._streamStatusChannel && this._streamStatusChannel.isText()){
-      
+  public async notifyStreamStatusChannel(
+    message: MessageConfig
+  ): Promise<void> {
+    if (this._streamStatusChannel && this._streamStatusChannel.isText()) {
+      await this._streamStatusChannel.send(message);
+    } else {
+      this._logger.error("Discord Notifier: Stream Status Channel not found");
     }
-  
+  }
+
+  public async notifyTestChannel(message: MessageConfig): Promise<void> {
+    if (this._testChannel && this._testChannel.isText()) {
+      await this._testChannel.send(message);
+    } else {
+      this._logger.error("DiscordNotifier: Test Channel not found");
+    }
+  }
 }
