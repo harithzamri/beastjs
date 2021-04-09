@@ -1,4 +1,4 @@
-import { Player, Track } from "discord-player";
+import { Player, Queue, Track } from "discord-player";
 import { Message } from "discord.js";
 import { getMusicStreamEmbed } from "../discord/discord-embed";
 import { getBasicInfo, videoInfo } from "ytdl-core";
@@ -15,6 +15,19 @@ const settings = {
 export async function play({ msg, player }: PlayConfig) {
   const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
   const command = args.shift()?.toLowerCase();
+  // player.on("playlistAdd", (msg, queue, args) => {
+  //   const { title, duration, url, thumbnail } = args;
+
+  //   msg.channel.send(
+  //     getMusicStreamEmbed({
+  //       title,
+  //       duration,
+  //       url,
+  //       thumbnailUrl: thumbnail,
+  //       requestedBy: msg.author.username,
+  //     })
+  //   );
+  // });
 
   if (command === "play") {
     player

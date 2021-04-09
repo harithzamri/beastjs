@@ -54,6 +54,7 @@ export class DiscordEventManager {
       }
     });
 
+    //music-command
     this._discordClient.on("message", async (msg: Message) => {
       play({ msg, player: this._player });
 

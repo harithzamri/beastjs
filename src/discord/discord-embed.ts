@@ -31,8 +31,8 @@ interface TwitchStreamEmbedConfig {
 }
 
 interface MusicStreamEmbedConfig {
-  title: string;
-  duration: string;
+  title?: string;
+  duration: string | number;
   thumbnailUrl: string;
   url: string;
   requestedBy: string;
