@@ -72,8 +72,9 @@ export async function play({ msg, player }: PlayConfig) {
         })
         .catch((error) => {});
     } else if (result.length < 20) {
-      await YouTube.search(args[0], { type: "video", limit: 2 })
+      await YouTube.search(args[0], { type: "video", limit: 1 })
         .then((results) => {
+          console.log(result);
           if (results && results.length !== 0) {
             const tracks = results.map((r) => new Track(r, msg.author, player));
             const firstResult = tracks.pop();

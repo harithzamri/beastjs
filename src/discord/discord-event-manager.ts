@@ -56,19 +56,19 @@ export class DiscordEventManager {
 
     this._discordClient.on("message", async (msg: Message) => {
       play({ msg, player: this._player });
-    });
 
-    this._discordClient.on("message", (msg: Message) => {
       if (msg.content === "!pause") {
         this._player.pause(msg);
         msg.channel.send("Now Pausing the song");
       }
-    });
-
-    this._discordClient.on("message", (msg: Message) => {
       if (msg.content === "!resume") {
         this._player.resume(msg);
         msg.channel.send("Resuming the song");
+      }
+
+      if (msg.content === "!stop") {
+        this._player.stop(msg);
+        msg.channel.send("Music has been stopped");
       }
     });
 
