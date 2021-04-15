@@ -30,6 +30,10 @@ interface TwitchStreamEmbedConfig {
   boxArtURL: string | null;
 }
 
+interface TwitchOfflineEmbedConfig {
+  startDate: Date;
+}
+
 interface MusicStreamEmbedConfig {
   title?: string;
   duration: string | number;
@@ -81,4 +85,13 @@ export function getMusicStreamEmbed({
       { name: "Requested By", value: requestedBy }
     )
     .setTimestamp(Date.now());
+}
+
+export function getTwitchOfflineEmbed({
+  startDate,
+}: TwitchOfflineEmbedConfig): Discord.MessageEmbed {
+  return new Discord.MessageEmbed()
+    .setColor(EMBED_COLOR)
+    .setFooter("Stream went offline")
+    .setTimestamp(startDate);
 }

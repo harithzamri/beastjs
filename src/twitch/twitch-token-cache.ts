@@ -1,4 +1,3 @@
-import assert from "assert";
 import { createRedis } from "../utils/redis";
 
 //prettier-ignore

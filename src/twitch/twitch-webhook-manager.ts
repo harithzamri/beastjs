@@ -9,12 +9,18 @@ import {
   fetchTwitchStreamUpdateCache,
   getTwitchStreamStatusCache,
   TwitchStreamStatus,
+  writeTwitchStreamStatusCache,
 } from "./twitch-stream-status-cache";
+import { DiscordNotifier } from "../discord/discord-notifier";
+import {
+  getTwitchOfflineEmbed,
+  getTwitchStreamEmbed,
+} from "src/discord/discord-embed";
 
 export interface TwitchWebHookManagerConfig {
   apiClient: ApiClient;
   chatClient: ChatClient;
-  discordClient: DiscordClient;
+  discordNotifier: DiscordNotifier;
 }
 
 function getStreamStatus(stream: HelixStream | undefined): TwitchStreamStatus {
@@ -45,20 +51,21 @@ export class TwitchWebhookManager {
   private _apiClient: ApiClient;
   private _chatClient: ChatClient;
   private _discordClient: DiscordClient;
-  private listener: WebHookListener;
+  private _discordNotifier: DiscordNotifier;
+  private _listener: WebHookListener;
   private _logger: Logger;
+  private _thankedFollowers = new Set<string>();
 
   constructor({
     apiClient,
     chatClient,
-    discordClient,
+    discordNotifier,
   }: TwitchWebHookManagerConfig) {
     this._apiClient = apiClient;
-
+    this._discordNotifier = discordNotifier;
     this._chatClient = chatClient;
-    this._discordClient = discordClient;
 
-    this.listener = new WebHookListener(
+    this._listener = new WebHookListener(
       apiClient,
       new EnvPortAdapter({
         hostName: "example.com",
@@ -79,6 +86,16 @@ export class TwitchWebhookManager {
     });
   }
 
+  public async listen(app: ConnectCompatibleApp): Promise<void> {
+    const userId = "harithtoikee";
+    const username = "harithtoikee";
+    this._listener.applyMiddleware(app);
+    await Promise.all([
+      this._subscribeToStreamChanges(userId, username),
+      this._subscribeToFollowsToUser(userId, username),
+    ]);
+  }
+
   private async _subscribeToStreamChanges(
     userId: string,
     username: string
@@ -90,7 +107,7 @@ export class TwitchWebhookManager {
 
     this._logger.info("Initial Stream Status :" + initialStatus);
 
-    await this.listener.subscribeToStreamChanges(
+    await this._listener.subscribeToStreamChanges(
       userId,
       async (stream?: HelixStream) => {
         this._logger.info("Stream Change" + JSON.stringify(stream));
@@ -127,8 +144,58 @@ export class TwitchWebhookManager {
           this._logger.info(JSON.stringify(streamData));
 
           const noPing = stream.title.includes("test");
+          if (noPing) {
+            await this._discordNotifier.notifyTestChannel({
+              content: "no idea",
+              embed: getTwitchStreamEmbed({
+                title: stream.title,
+                gameName,
+                startDate: stream.startDate,
+                thumbnailURL: stream.thumbnailUrl,
+                boxArtURL: null,
+              }),
+            });
+          } else if (wentOnline(previousStatus, currentStatus)) {
+            const pingRole = "streamping";
+            await this._discordNotifier.notifyStreamStatusChannel({
+              content: `<@&${pingRole}> ${username} went live`,
+              embed: getTwitchStreamEmbed({
+                title: stream.title,
+                gameName,
+                startDate: stream.startDate,
+                thumbnailURL: stream.thumbnailUrl,
+                boxArtURL: game ? game.boxArtUrl : null,
+              }),
+            });
+          }
+        } else if (wentOffline(previousStatus, currentStatus)) {
+          await this._discordNotifier.notifyStreamStatusChannel({
+            content: `${username} went offline`,
+            embed: getTwitchOfflineEmbed({
+              startDate: new Date(),
+            }),
+          });
         }
+        await writeTwitchStreamStatusCache(currentStatus);
       }
     );
+  }
+
+  private async _subscribeToFollowsToUser(
+    userId: string,
+    userName: string
+  ): Promise<void> {
+    await this._listener.subscribeToFollowsToUser(userId, (follow) => {
+      this._logger.info("Follow :" + JSON.stringify(follow));
+      if (this._thankedFollowers.has(follow.userId)) {
+        this._logger.warn("User has already has been thanked; returning");
+        return;
+      }
+      this._chatClient.say(
+        userName,
+        `@${follow.userDisplayName} thank you for the follow`
+      );
+      this._thankedFollowers.add(follow.userId);
+    });
   }
 }

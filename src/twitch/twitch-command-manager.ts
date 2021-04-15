@@ -19,7 +19,7 @@ function durationInEnglish(duration: number): string {
 
 const COMMAND_PREFIX = "hello";
 
-export class TwitchManagerConfig {
+export class TwitchCommandManager {
   private _apiClient: ApiClient;
   private _chatClient: ChatClient;
   private _logger: Logger;
