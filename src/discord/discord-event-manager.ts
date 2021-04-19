@@ -147,6 +147,15 @@ export class DiscordEventManager {
       return;
     }
 
-    assert(newStreamingActivity);
+    assert(
+      newStreamingActivity,
+      `[presence] ${user.id} if newStreamingActivity is null, logic is broken`
+    );
+
+    if (!newStreamingActivity?.url) {
+      this._logger.info(
+        `[presence] ${user.id} ${user.tag} is streaming, but without a url`
+      );
+    }
   }
 }
