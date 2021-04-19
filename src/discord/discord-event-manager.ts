@@ -4,8 +4,10 @@ import {
   Activity,
   Channel,
   Client as DiscordClient,
+  User as DiscordUser,
   Message,
   Presence,
+  Guild,
 } from "discord.js";
 import { getLogger } from "../utils/logger";
 import { getBasicInfo, videoInfo } from "ytdl-core";
@@ -17,6 +19,9 @@ import {
 } from "../utils/constants";
 import { play } from "../music/play";
 import { assert } from "node:console";
+import { refreshed } from "src/utils/time-utils";
+import humanizeDuration from "humanize-duration";
+import { DiscordNotifier } from "./discord-notifier";
 
 interface DiscordEventManagerConfig {
   discordClient: DiscordClient;
@@ -49,11 +54,17 @@ export class DiscordEventManager {
   private _discordClient: DiscordClient;
   private _logger: Logger;
   private _player: Player;
+  private _guild: Guild;
+  private _discordNotifier: DiscordNotifier;
+  private _membersStreamingCooldown = new Map<string, Date>();
 
   constructor({ discordClient }: DiscordEventManagerConfig) {
     this._discordClient = discordClient;
     this._logger = getLogger({ name: "beast-discord-event-manager" });
     this._player = new Player(this._discordClient);
+
+    const guilds = this._discordClient.guilds.cache.array();
+    this._guild = guilds[0];
   }
 
   public async listen(): Promise<void> {
@@ -156,6 +167,37 @@ export class DiscordEventManager {
       this._logger.info(
         `[presence] ${user.id} ${user.tag} is streaming, but without a url`
       );
+      return;
+    }
+
+    await this._addRoleToUser(DISCORD_ROLE_ID.MEMBERS, user);
+
+    const previousMessageDate = this._membersStreamingCooldown.get(user.id);
+    if (previousMessageDate && !refreshed(previousMessageDate, 20)) {
+      this._logger.info(
+        `[presence] ${
+          user.tag
+        } was already broadcasted to #streaming-members within the past ${humanizeDuration(
+          20
+        )}`
+      );
+
+      await this._discordNotifier.notifyTestChannel({
+        content: `Ignoring streaming update from ${
+          user.id
+        } due to cooldown (last triggered ${String(20)})`,
+      });
+    }
+  }
+
+  private async _addRoleToUser(role: string, user: DiscordUser) {
+    try {
+      const guildMember = await this._guild.members.fetch(user);
+      await guildMember.roles.remove(role);
+      this._logger.info(`Added role ${role} for ${user.tag}`);
+    } catch (error) {
+      this._logger.error(`Adding role ${role} for ${user.tag} FAILED`);
+      this._logger.error(error);
     }
   }
 }
