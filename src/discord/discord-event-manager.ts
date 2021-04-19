@@ -187,7 +187,17 @@ export class DiscordEventManager {
           user.id
         } due to cooldown (last triggered ${String(20)})`,
       });
+      return;
     }
+
+    const guildMember = await this._guild.members.fetch(user);
+
+    const message = {
+      content: `${guildMember.displayName} is streaming at ${newStreamingActivity.url}`,
+    };
+
+    await this._discordNotifier.notifyStreamStatusChannel(message);
+    this._membersStreamingCooldown.set(user.id, new Date());
   }
 
   private async _addRoleToUser(role: string, user: DiscordUser) {
