@@ -4,7 +4,7 @@ import { getMusicStreamEmbed } from "../discord/discord-embed";
 import { getBasicInfo, videoInfo } from "ytdl-core";
 import { YouTube } from "youtube-sr";
 
-interface PlayConfig {
+export interface PlayConfig {
   msg: Message;
   player: Player;
 }
@@ -12,22 +12,9 @@ const settings = {
   prefix: "!",
 };
 
-export async function play({ msg, player }: PlayConfig) {
+export async function play({ msg, player }: PlayConfig): Promise<void> {
   const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
   const command = args.shift()?.toLowerCase();
-  // player.on("playlistAdd", (msg, queue, args) => {
-  //   const { title, duration, url, thumbnail } = args;
-
-  //   msg.channel.send(
-  //     getMusicStreamEmbed({
-  //       title,
-  //       duration,
-  //       url,
-  //       thumbnailUrl: thumbnail,
-  //       requestedBy: msg.author.username,
-  //     })
-  //   );
-  // });
 
   if (command === "play") {
     player

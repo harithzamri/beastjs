@@ -9,6 +9,7 @@ import {
   Presence,
   Guild,
 } from "discord.js";
+import assert from "assert";
 import { getLogger } from "../utils/logger";
 import { getBasicInfo, videoInfo } from "ytdl-core";
 import { getMusicStreamEmbed } from "./discord-embed";
@@ -18,8 +19,7 @@ import {
   DISCORD_USER_ID,
 } from "../utils/constants";
 import { play } from "../music/play";
-import { assert } from "node:console";
-import { refreshed } from "src/utils/time-utils";
+import { refreshed } from "../utils/time-utils";
 import humanizeDuration from "humanize-duration";
 import { DiscordNotifier } from "./discord-notifier";
 

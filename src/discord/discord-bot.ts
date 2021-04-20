@@ -52,6 +52,7 @@ export async function createDiscordClientImp(
     if (role) {
       member.roles.add(role);
     }
+    logger.info(`New Member joined ${member.user.username}`);
 
     member.send(joinembed);
   });
