@@ -1,8 +1,7 @@
 import { Logger } from "@d-fischer/logger/lib";
-import { Player, Track } from "discord-player";
+import { Player } from "discord-player";
 import {
   Activity,
-  Channel,
   Client as DiscordClient,
   User as DiscordUser,
   Message,
@@ -11,17 +10,16 @@ import {
 } from "discord.js";
 import assert from "assert";
 import { getLogger } from "../utils/logger";
-import { getBasicInfo, videoInfo } from "ytdl-core";
-import { getMusicStreamEmbed } from "./discord-embed";
 import {
   DISCORD_CHANNEL_ID,
   DISCORD_ROLE_ID,
   DISCORD_USER_ID,
 } from "../utils/constants";
-import { play } from "../music/play";
 import { refreshed } from "../utils/time-utils";
 import humanizeDuration from "humanize-duration";
 import { DiscordNotifier } from "./discord-notifier";
+import { DiscordMusic } from "../music/discord-music";
+import { play } from "../music/play";
 
 interface DiscordEventManagerConfig {
   discordClient: DiscordClient;
@@ -77,6 +75,9 @@ export class DiscordEventManager {
     this._player.on("trackStart", (message, track) =>
       message.channel.send(`Now playing ${track.title}...`)
     );
+
+    // const music = new DiscordMusic();
+    // await music.listen();
 
     this._discordClient.on("message", (msg: Message) => {
       if (msg.content === "!latency") {

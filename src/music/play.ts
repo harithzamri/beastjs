@@ -19,7 +19,63 @@ export async function play({ msg, player }: PlayConfig): Promise<void> {
   if (command === "play") {
     player
       .play(msg, args[0], true)
-      .then()
+      .then(async () => {
+        const result = args[0];
+        if (result.length > 20) {
+          await getBasicInfo(args[0])
+            .then((videoUrlData: videoInfo) => {
+              const { title, url, duration, thumbnail } = new Track(
+                {
+                  title: videoUrlData.videoDetails.title,
+                  url: videoUrlData.videoDetails.video_url,
+                  views: videoUrlData.videoDetails.viewCount,
+                  thumbnail: videoUrlData.videoDetails.thumbnails[0],
+                  lengthSeconds: videoUrlData.videoDetails.lengthSeconds,
+                  description: videoUrlData.videoDetails.description,
+                  author: {
+                    name: videoUrlData.videoDetails.author.name,
+                  },
+                },
+                msg.author,
+                player
+              );
+              msg.channel.send(
+                getMusicStreamEmbed({
+                  title,
+                  duration,
+                  url,
+                  thumbnailUrl: thumbnail,
+                  requestedBy: msg.author.username,
+                })
+              );
+            })
+            .catch((error) => {});
+        } else if (result.length < 20) {
+          await YouTube.search(args[0], { type: "video", limit: 1 })
+            .then((results) => {
+              console.log(result);
+              if (results && results.length !== 0) {
+                const tracks = results.map(
+                  (r) => new Track(r, msg.author, player)
+                );
+                const firstResult = tracks.pop();
+                if (firstResult) {
+                  msg.channel.send(
+                    getMusicStreamEmbed({
+                      title: firstResult?.title,
+                      duration: firstResult?.duration,
+                      url: firstResult.url,
+                      thumbnailUrl: firstResult.thumbnail,
+                      requestedBy: msg.author.username,
+                    })
+                  );
+                }
+              }
+            })
+
+            .catch((error) => {});
+        }
+      })
       .catch(() => {
         if (!msg.member?.voice.channel)
           return msg.channel.send(
@@ -40,59 +96,5 @@ export async function play({ msg, player }: PlayConfig): Promise<void> {
           );
         return;
       });
-
-    const result = args[0];
-    if (result.length > 20) {
-      await getBasicInfo(args[0])
-        .then((videoUrlData: videoInfo) => {
-          const { title, url, duration, thumbnail } = new Track(
-            {
-              title: videoUrlData.videoDetails.title,
-              url: videoUrlData.videoDetails.video_url,
-              views: videoUrlData.videoDetails.viewCount,
-              thumbnail: videoUrlData.videoDetails.thumbnails[0],
-              lengthSeconds: videoUrlData.videoDetails.lengthSeconds,
-              description: videoUrlData.videoDetails.description,
-              author: {
-                name: videoUrlData.videoDetails.author.name,
-              },
-            },
-            msg.author,
-            player
-          );
-          msg.channel.send(
-            getMusicStreamEmbed({
-              title,
-              duration,
-              url,
-              thumbnailUrl: thumbnail,
-              requestedBy: msg.author.username,
-            })
-          );
-        })
-        .catch((error) => {});
-    } else if (result.length < 20) {
-      await YouTube.search(args[0], { type: "video", limit: 1 })
-        .then((results) => {
-          console.log(result);
-          if (results && results.length !== 0) {
-            const tracks = results.map((r) => new Track(r, msg.author, player));
-            const firstResult = tracks.pop();
-            if (firstResult) {
-              msg.channel.send(
-                getMusicStreamEmbed({
-                  title: firstResult?.title,
-                  duration: firstResult?.duration,
-                  url: firstResult.url,
-                  thumbnailUrl: firstResult.thumbnail,
-                  requestedBy: msg.author.username,
-                })
-              );
-            }
-          }
-        })
-
-        .catch((error) => {});
-    }
   }
 }

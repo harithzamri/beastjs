@@ -8,10 +8,10 @@ export class DiscordMusic {
   private _player: Player;
 
   public async listen(): Promise<void> {
-    this._discordClient.on("message", (msg: Message) => {
-      play({ msg, player: this._player });
+    this._discordClient.on("message", async (msg: Message) => {
+      await play({ msg, player: this._player });
 
-      pause({ msg, player: this._player });
+      await pause({ msg, player: this._player });
     });
   }
 }
