@@ -26,6 +26,7 @@
     "easy-twitch-bot": "^4.5.1",
     "express": "^4.17.1",
     "ffmpeg-static": "^4.2.7",
+    "got": "^9.6.0",
     "humanize-duration": "^3.25.1",
     "ioredis": "^4.25.0",
     "node-pre-gyp": "^0.17.0",
@@ -39,6 +40,7 @@
     "ytdl-core": "^4.5.0"
   },
   "devDependencies": {
+    "@types/got": "^9.6.11",
     "@types/humanize-duration": "^3.18.1",
     "@types/ioredis": "^4.22.2",
     "nodemon": "^2.0.7"
