@@ -18,7 +18,6 @@ import {
 import { refreshed } from "../utils/time-utils";
 import humanizeDuration from "humanize-duration";
 import { DiscordNotifier } from "./discord-notifier";
-import { DiscordMusic } from "../music/discord-music";
 import { play } from "../music/play";
 
 interface DiscordEventManagerConfig {
@@ -75,9 +74,6 @@ export class DiscordEventManager {
     this._player.on("trackStart", (message, track) =>
       message.channel.send(`Now playing ${track.title}...`)
     );
-
-    // const music = new DiscordMusic();
-    // await music.listen();
 
     this._discordClient.on("message", (msg: Message) => {
       if (msg.content === "!latency") {
